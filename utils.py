@@ -27,7 +27,7 @@ def read_instance_data(filename):
         with open(filename, 'r') as instance:
             lines = instance.readlines()
             global_width, num_circuits = map(int, [line.strip() for line in lines[:2]])
-            width, height = read_dimensions(lines[2:], num_circuits)
+            width, height = read_dimensions(lines[2:])
             
             if width is None or height is None:
                 return 
@@ -39,7 +39,9 @@ def read_instance_data(filename):
     return global_width, num_circuits, width, height
 
 # TODO description
-def data_converter(path=DEFAULT_PATH):
+def data_prep(path=DEFAULT_PATH):
+
+    print("porcodio", path)
 
     # Remove old datafiles if present
     if os.path.exists(DATAFILES_PATH):
@@ -55,7 +57,7 @@ def data_converter(path=DEFAULT_PATH):
     
         print("Converting " + filename + " to " + converted_file)
 
-        file_prep(DEFAULT_PATH + "/"+ filename, converted_file)
+        file_prep(path + "/"+ filename, converted_file)
 
     print("Done")
 

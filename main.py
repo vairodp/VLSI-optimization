@@ -2,7 +2,7 @@ import os
 import argparse
 
 from CP.src import solver
-from utils import data_prep, DATAFILES_PATH
+from utils import data_prep, DATAFILES_PATH, DEFAULT_PATH
 
 def main(args):
     
@@ -23,9 +23,8 @@ def main(args):
         os.makedirs(output)
  
     if os.path.exists(model_name):
-        print("Model found")
+        print("Found model: " + model_name)
         for file in os.listdir(DATAFILES_PATH):
-            print("Solving " + file)
             solver(file, output, rotation, model_name, symmetry_breaking_constraints)
         print("Done")
     else:
@@ -40,13 +39,15 @@ def main(args):
 
 
 if __name__ == '__main__':
+
+    #TODO pyramid
     parser = argparse.ArgumentParser()
-    parser.add_argument('display', default = False, help = 'TODO')
-    parser.add_argument('rotation', default = False, help = 'TODO')
-    parser.add_argument('model_name', default = 'model', help = 'TODO')
-    parser.add_argument('output', default = "../output/", help = 'TODO')
-    parser.add_argument('symmetry-breaking-constraints', default = False, help = 'TODO')
-    parser.add_argument('path', default = "../../dataset/instances/instances/", help = 'TODO')
+    parser.add_argument('--display', default = False, help = 'TODO', required = False)
+    parser.add_argument('--rotation', default = False, help = 'TODO', required = False)
+    parser.add_argument('--model_name', default = 'model', help = 'TODO', required=False)
+    parser.add_argument('--output', default = "../output/", help = 'TODO', required = False)
+    parser.add_argument('--symmetry-breaking-constraints', default = False, help = 'TODO' , required = False)
+    parser.add_argument('--path', default = DEFAULT_PATH, help = 'TODO', required = False)
     
     
     args = parser.parse_args()
