@@ -4,6 +4,7 @@ import argparse
 
 from CP.src.solver import solver
 from utils import data_prep, DATAFILES_PATH, DEFAULT_PATH
+from visualizer import visualizer
 
 def main(args):
     
@@ -24,18 +25,19 @@ def main(args):
         os.makedirs(output)
  
     if os.path.exists(model_name):
-        print("Found model: " + model_name)
+        print(" --> Found model: " + model_name)
         for file in os.listdir(DATAFILES_PATH):
-            solver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)
+            output_file = solver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)
+            
+            if display:
+                print(" ---> Displaying output file: " + output_file)
+                visualizer(output_file)
+                #draw_output(output_file)
         print("Done")
     else:
         print("Model not found on this path: " + model_name)
         return
 
-    if display:
-        print("Initializing display")
-        display()
-    
     # Clean up
     shutil.rmtree(DATAFILES_PATH)
 
