@@ -1,7 +1,12 @@
 import os
+import shutil
 
+DATAFILES_PATH = "datafiles/"
 DEFAULT_PATH = "dataset/instances/instances"
-DATAFILES_PATH = "./datafiles"
+
+# 5 minutes
+TIME_LIMIT = 300000
+
 
 # TODO description
 def read_dimensions(file):
@@ -14,15 +19,10 @@ def read_dimensions(file):
             return None, None
         width.append(w)
         height.append(h)
-    print(f"circuits_w: {width}")
-    print(f"circuits_h: {height}")
     return width, height
 
 # TODO description
 def read_instance_data(filename):
-
-    print(f"Reading instance file '{filename}'")
-
     try:
         with open(filename, 'r') as instance:
             lines = instance.readlines()
@@ -41,12 +41,10 @@ def read_instance_data(filename):
 # TODO description
 def data_prep(path=DEFAULT_PATH):
 
-    print("porcodio", path)
-
     # Remove old datafiles if present
     if os.path.exists(DATAFILES_PATH):
-        os.rmdir(DATAFILES_PATH)
-    
+        shutil.rmtree(DATAFILES_PATH)
+
     os.mkdir(DATAFILES_PATH)
 
     for filename in os.listdir(path):
@@ -55,18 +53,16 @@ def data_prep(path=DEFAULT_PATH):
         else:
             converted_file = DATAFILES_PATH + "/"+ filename
     
-        print("Converting " + filename + " to " + converted_file)
+        print("Converted " + filename + " to " + converted_file)
 
         file_prep(path + "/"+ filename, converted_file)
-
-    print("Done")
 
 # Read files TODO
 def file_prep(filepath, filename):
     
-    global_width, num_circuits, height, height = read_instance_data(filepath)
+    plate_width, tot_circuits, circuits_width, circuits_height = read_instance_data(filepath)
     with open(filename, 'w') as out:
-        out.write(f"num_circuits={num_circuits};\n")
-        out.write(f"width={global_width};\n")
-        out.write(f"circuits_w={height};\n")
-        out.write(f"circuits_h={height};\n")
+        out.write(f"tot_circuits={tot_circuits};\n")
+        out.write(f"plate_width={plate_width};\n")
+        out.write(f"circuits_width={circuits_width};\n")
+        out.write(f"circuits_height={circuits_height};\n")
