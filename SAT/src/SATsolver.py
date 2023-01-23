@@ -1,7 +1,22 @@
 import os
-import time
-import json
-#from utils import TIME_LIMIT
+
+# TODO improve this function, this is just a draft
+def convert_z3_format(input, solution, output_file):
+    
+    # Writing in the output file
+    with open(output_file, 'w') as f:
+        # writing on the first line of the file
+        f.write(f"{input['plate_width']} {solution['h_board']}\n")
+        # writing on the second line of the file
+        f.write(f"{input['tot_circuits']}\n")
+        # writing on the third line of the file
+        for i, j, k, l in zip(input['circuits_width'], input['circuits_height'], solution['xc'], solution['yc']):
+            f.write(f"{i} {j} {k} {l}\n")
+        f.write(f"% time elapsed: {round(solution['execution_time'],2)} s\n")
+        f.write(f"----------\n")
+        f.write(f"==========\n")
+        f.write(f"% time elapsed: {round(solution['execution_time'],2)} s\n")
+    return
 
 def read_variables(file_path):
     variables = {}
@@ -24,17 +39,12 @@ def read_variables(file_path):
         print("An error occurred.")
     return variables
 
+# TODO use the timilimit parameter
 def SATsolver(file_path, output_path, rotation, model_path, symmetry_breaking_constraints):
     
-    circuits_variables = read_variables(file_path)
-
-    cmd = "python " + model_path + " " + file_path
-    stream = os.popen(cmd)  
-
     output_file = os.path.join(output_path, os.path.basename(file_path).replace(".dzn", ".txt"))
 
-    with open(output_file, 'w') as f:
-        # Write the output to the file
-        f.write(stream.read())
-    
-    return
+    cmd = "python " + model_path + " " + file_path + " " + output_file
+    os.popen(cmd)
+
+    return output_file
