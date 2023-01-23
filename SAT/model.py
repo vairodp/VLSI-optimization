@@ -68,7 +68,7 @@ def get_first_index(solution, bool_variable, n_circuits):
 def SAT_model(circuits_variables):
 
     n_circuits = circuits_variables["tot_circuits"]
-    w_board = circuits_variables["max_width"]
+    w_board = circuits_variables["plate_width"]
     w = circuits_variables["circuits_width"]
     h = circuits_variables["circuits_height"]
  
@@ -76,22 +76,24 @@ def SAT_model(circuits_variables):
 
     for h_board in h_range:
 
+        # print(f"h_board is:{h_board}\n")
+
         x = [[Bool(f"x[{c}][{w}]") for w in range(w_board)] for c in range(n_circuits)]
         y = [[Bool(f"y[{c}][{h}]") for h in range(h_board)] for c in range(n_circuits)]
 
         existence_x = existence(x, w, w_board, n_circuits)
-        existence_y = existence(y, w, h_board, n_circuits)
+        existence_y = existence(y, h, h_board, n_circuits)
 
         unicity_x = unicity(x, w, w_board, n_circuits)
-        unicity_y = unicity(y, w, h_board, n_circuits)
+        unicity_y = unicity(y, h, h_board, n_circuits)
 
         impenetrability_c= impenetrability(x, y, w_board, h_board, n_circuits)
 
         solver = Solver()
         solver.add(existence_x)
         solver.add(existence_y)
-        solver.add(unicity_x)
-        solver.add(unicity_y)
+        #solver.add(unicity_x)
+        #solver.add(unicity_y)
         solver.add(impenetrability_c)
 
         start = time.time()
@@ -105,6 +107,7 @@ def SAT_model(circuits_variables):
             yc = get_first_index(solution, y, n_circuits)
 
             return h_board, execution_time, xc, yc
+        # print(f'The problem is {str(solved)} for an h_board of {h_board}')
 
     return "unsat"
 
@@ -113,16 +116,16 @@ if __name__ == "__main__":
     circuits_variables = read_variables(sys.argv[1])
     
     # the following line is for debugging:
-    # circuits_variables = {'tot_circuits': 4, 'max_width': 5, 'circuits_width': [2,5,3,2], 'circuits_height':[5,6,1,2]}
+    # circuits_variables = {'tot_circuits': 4, 'plate_width': 5, 'circuits_width': [2,3,3,2], 'circuits_height':[5,6,1,2]}
 
     solution = SAT_model(circuits_variables)
     if solution == 'unsat':
-        pass #TO BE DEFINED
+        print('Problem is unsat')
     else:
         # if "solution" is different from "unsat", it will have the following structure: 
         # (h_board, execution_time, x coordinates of the BL corners, x coordinates of the BL corners)
         # x and y coordinates are organized in lists, with indexes refering to circuits according to the order
         # defined in w and h lists
-        pass #TO BE DEFINE
+        print(solution)
 
 
