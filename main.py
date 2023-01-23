@@ -34,7 +34,10 @@ def main(args):
         if os.path.exists(model_name):
             print(" --> Found model: " + model_name)
             for file in os.listdir(DATAFILES_PATH):
-                output_file = CPsolver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)        
+                output_file = CPsolver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)
+                if display:
+                    print(" ---> Displaying output file: " + output_file)
+                    visualizer(output_file)      
             print("Done")
         else:
             print("Model for CP not found on this path: " + model_name)
@@ -47,7 +50,10 @@ def main(args):
         if os.path.exists(model_name):
             print(" --> Found model: " + model_name)
             for file in os.listdir(DATAFILES_PATH):
-                output_file = SATsolver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)      
+                output_file = SATsolver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)
+                if display:
+                    print(" ---> Displaying output file: " + output_file)
+                    visualizer(output_file)      
             print("Done")
         else:
             print("Model for SAT not found on this path: " + model_name)
@@ -60,15 +66,16 @@ def main(args):
             print(" --> Found model: " + model_name)
             for file in os.listdir(DATAFILES_PATH):
                 output_file = MIPsolver(DATAFILES_PATH + file, output, rotation, model_name, symmetry_breaking_constraints)
+                if display:
+                    print(" ---> Displaying output file: " + output_file)
+                    visualizer(output_file)
             print("Done")
 
         else:
             print("Model for MIP not found on this path: " + model_name)
             return
 
-    if display:
-        print(" ---> Displaying output file: " + output_file)
-        visualizer(output_file)
+    
 
     # Clean up
     shutil.rmtree(DATAFILES_PATH)
