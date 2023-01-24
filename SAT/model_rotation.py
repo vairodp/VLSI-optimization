@@ -8,12 +8,11 @@ from itertools import combinations
 from src.SATsolver import read_variables, convert_z3_format
 
 
-
 def get_h_range(w_board, w, h):
 
     area = sum(w[i] * h[i] for i in range(len(w)))
     h_min = ceil(area / w_board )
-    h_max = sum([h[i] for i in range(len(w))])
+    h_max = sum([max(h[i],w[i]) for i in range(len(w))])
 
     return np.arange(h_min, h_max)
 
