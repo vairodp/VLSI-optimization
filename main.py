@@ -2,7 +2,7 @@ import os
 import shutil
 import argparse
 
-#from CP.src.CPsolver import CPsolver
+from CP.src.CPsolver import CPsolver
 
 from SAT.src.SATsolver import SATsolver
 from MIP.src.MIPsolver import MIPsolver
@@ -31,7 +31,11 @@ def main(args):
 
     # CP
     if approach == "CP":
-        model_name = "./CP/" + model_name + ".mzn"
+        if rotation:
+            model_name = "./CP/" + model_name + "_rotation.mzn"
+        else:
+            model_name = "./CP/" + model_name + ".mzn"
+        
         if os.path.exists(model_name):
             print(" --> Found model: " + model_name)
             for file in os.listdir(DATAFILES_PATH):
@@ -65,7 +69,11 @@ def main(args):
     
     # MIP
     elif approach == "MIP":
-        model_name = "./MIP/" + model_name + ".py"
+        if rotation:
+            model_name = "./MIP/" + model_name + "_rotation.py"
+        else:
+            model_name = "./MIP/" + model_name + ".py"
+        
         if os.path.exists(model_name):
             print(" --> Found model: " + model_name)
             for file in os.listdir(DATAFILES_PATH):
