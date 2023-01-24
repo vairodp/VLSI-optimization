@@ -5,7 +5,7 @@ import numpy as np
 from math import ceil
 from z3 import Bool, And, Or, Not, Xor, Implies, Solver
 from itertools import combinations
-from src.SATsolver import read_variables
+from src.SATsolver import read_variables, convert_z3_format
 
 
 
@@ -17,7 +17,7 @@ def get_h_range(w_board, w, h):
 
     return np.arange(h_min, h_max)
 
-# (x[c] ∧ ¬r[c]) ∨ (y[c] ∧ r[c])
+# (X[c] ∧ ¬r[c]) ∨ (Y[c] ∧ r[c])
 def existence(variable, span, r_span, limit, n_circuits, r):
     e = And([
             Xor(
@@ -75,12 +75,17 @@ def rotation(rx, ry):
 
 
 def get_first_index(solution, bool_variable, n_circuits):
-
-    return  [[solution.eval(variable) for variable in bool_variable[c]] for c in range(n_circuits)]
+    return  [[solution.eval(variable) for variable in bool_variable[c]].index(True) for c in range(n_circuits)]
 
 def rotated(solution, r):
     return [solution.eval(i) for i in r]
 
+    
+def rotate_circuits(w, h, rc):
+    for i in range(len(rc)):
+        if rc[i] == True:
+            w[i], h[i] = h[i], w[i]
+    return w, h
 
 def SAT_model(circuits_variables):
 
@@ -97,11 +102,11 @@ def SAT_model(circuits_variables):
         x = [[Bool(f"x[{c}][{w}]") for w in range(w_board)] for c in range(n_circuits)]
         y = [[Bool(f"y[{c}][{h}]") for h in range(h_board)] for c in range(n_circuits)]
 
-        rx = [Bool(f"rx[{c}]") for c in range(n_circuits)]
+        r = [Bool(f"rx[{c}]") for c in range(n_circuits)]
         # ry = [Bool(f"ry[{c}]") for c in range(n_circuits)]
 
-        existence_x = existence(x, w, h, w_board, n_circuits, rx)
-        existence_y = existence(y, h, w, h_board, n_circuits, rx)
+        existence_x = existence(x, w, h, w_board, n_circuits, r)
+        existence_y = existence(y, h, w, h_board, n_circuits, r)
 
         unicity_x = unicity(x, w, w_board, n_circuits)
         unicity_y = unicity(y, w, h_board, n_circuits)
@@ -125,20 +130,25 @@ def SAT_model(circuits_variables):
         
         if str(solved) == 'sat':
             solution = solver.model()
-            print(solution)
+            #print(solution)
             xc = get_first_index(solution, x, n_circuits)
             yc = get_first_index(solution, y, n_circuits)
-            rc = rotated(solution, rx)
-            return h_board, execution_time, xc, yc, rc
+            rc = rotated(solution, r)
+            print(rc)
+            rotated_circuits = rotate_circuits(w,h,rc)
+            circuits_variables["circuits_width"] = rotated_circuits[0]
+            circuits_variables["circuits_height"] = rotated_circuits[1]
+    
+            return {'h_board': h_board, 'execution_time': execution_time, 'xc': xc, 'yc': yc}
 
     return "unsat"
 
 if __name__ == "__main__":
 
-    circuits_variables = read_variables(sys.argv[1])
+    # circuits_variables = read_variables(sys.argv[1])
     
     # the following line is for debugging:
-    # circuits_variables = {'tot_circuits': 4, 'plate_width': 8, 'circuits_width': [3, 5, 3, 5], 'circuits_height':[3, 3, 5, 5]}
+    circuits_variables = {'tot_circuits': 4, 'plate_width': 8, 'circuits_width': [3, 3, 3, 5], 'circuits_height':[3, 5, 5, 5]}
 
     solution = SAT_model(circuits_variables)
     if solution == 'unsat':
@@ -148,7 +158,7 @@ if __name__ == "__main__":
         # (h_board, execution_time, x coordinates of the BL corners, x coordinates of the BL corners)
         # x and y coordinates are organized in lists, with indexes refering to circuits according to the order
         # defined in w and h lists
-        print(solution)
+        convert_z3_format(circuits_variables, solution, sys.argv[2])
 
 
 

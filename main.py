@@ -2,7 +2,8 @@ import os
 import shutil
 import argparse
 
-from CP.src.CPsolver import CPsolver
+#from CP.src.CPsolver import CPsolver
+
 from SAT.src.SATsolver import SATsolver
 from MIP.src.MIPsolver import MIPsolver
 from visualizer import visualizer
@@ -45,7 +46,10 @@ def main(args):
     
     # SAT
     elif approach == "SAT":
-        model_name = "./SAT/" + model_name + ".py"
+        if rotation:
+            model_name = "./SAT/" + model_name + "_rotation.py"
+        else:
+            model_name = "./SAT/" + model_name + ".py"
 
         if os.path.exists(model_name):
             print(" --> Found model: " + model_name)
