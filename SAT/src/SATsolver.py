@@ -3,6 +3,7 @@ import os
 # TODO improve this function, this is just a draft
 def convert_z3_format(input, solution, output_file):
     
+    print("Creating file: " + output_file)
     # Writing in the output file
     with open(output_file, 'w') as f:
         # writing on the first line of the file
@@ -16,6 +17,7 @@ def convert_z3_format(input, solution, output_file):
         f.write(f"----------\n")
         f.write(f"==========\n")
         f.write(f"% time elapsed: {round(solution['execution_time'],2)} s\n")
+    print("File created: " + output_file)
     return
 
 def read_variables(file_path):
@@ -45,6 +47,6 @@ def SATsolver(file_path, output_path, rotation, model_path, symmetry_breaking_co
     output_file = os.path.join(output_path, os.path.basename(file_path).replace(".dzn", ".txt"))
 
     cmd = "python " + model_path + " " + file_path + " " + output_file
-    os.popen(cmd)
-
+    placeholder = os.popen(cmd)
+    print(placeholder.read())
     return output_file
