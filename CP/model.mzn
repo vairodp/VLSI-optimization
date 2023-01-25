@@ -41,8 +41,11 @@ array[1..tot_circuits] of int: decreasing_area = arg_sort(i in 1..tot_circuits)(
 
 % constaining each circuit to be always inside the board, both in widht and height
 constraint forall(i in 1..tot_circuits)(x[i] + circuits_width[i] <= plate_width /\ y[i] + circuits_height[i] <= height);
-% 
+
+% ensuring that circuits do not overlap
 constraint diffn(x, y, circuits_width, circuits_height);
+
+% efficiently spreading circuits over the available space
 constraint cumulative(x, circuits_width, circuits_height, height);
 constraint cumulative(y, circuits_height, circuits_width, plate_width);
 
