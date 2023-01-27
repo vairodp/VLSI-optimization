@@ -26,8 +26,7 @@ def existence(variable, span, r_span, limit, n_circuits, r):
                         And([Not(variable[c][j]) for j in list(set(np.arange(limit)) - set(np.arange(span[c]) + i))]),
                         Not(r[c])
                         ) for i in range(limit - span[c] + 1)]
-                    )
-,
+                    ),
                 Or([
                     And(
                         And([variable[c][j] for j in np.arange(r_span[c]) + i]), 
