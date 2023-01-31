@@ -13,7 +13,7 @@ array[1..tot_circuits] of int: circuits_height;
 int: area_min = sum( i in 1..tot_circuits)(circuits_width[i] * circuits_height[i]);
 
 % defining the idel minimum value for the height, not taking into account circuits shapes
-int: intrinsic_h_min = ceil(area_min/width);
+int: intrinsic_h_min = ceil(area_min/plate_width);
 
 % defining the minimum possible area as the biggest between the idea area and the largest circuit area
 int: h_min = max(max(circuits_height), intrinsic_h_min);
@@ -30,7 +30,7 @@ int: circuits_height_min = min(circuits_height);
 
 % defining an array of variable for the x and y coordinates of the bottom left corner of each circuit, spanning
 % an appropriately limited domain;
-array[1..tot_circuits] of var 0.. plate_width - circuits_width_min: x;
+array[1..tot_circuits] of var 0..plate_width - circuits_width_min: x;
 array[1..tot_circuits] of var 0..h_max - circuits_height_min: y;
 
 % defining an array of indexes representing the circuits from the biggest to the smallest in terms of area;
@@ -40,9 +40,9 @@ array[1..tot_circuits] of int: decreasing_area = arg_sort(i in 1..tot_circuits)(
 % SETTING THE CONSTRAINTS
 
 % constaining each circuit to be always inside the board, both in widht and height
-constraint forall(i in 1..tot_circuits)(x[i] + circuits_width[i] <= plate_width /\ y[i] + circuits_height[i] <= height);
+%constraint forall(i in 1..tot_circuits)(x[i] + circuits_width[i] <= plate_width /\ y[i] + circuits_height[i] <= height);
 
-% ensuring that circuits do not overlap
+% ensuring that circuits do not overlap 
 constraint diffn(x, y, circuits_width, circuits_height);
 
 % efficiently spreading circuits over the available space
