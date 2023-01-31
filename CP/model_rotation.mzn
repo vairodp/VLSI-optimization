@@ -38,16 +38,16 @@ array[1..tot_circuits] of int: decreasing_area = arg_sort(i in 1..tot_circuits)(
 
 % setting the largest possible dimension to be used in the rotation case
 int: max_dimension = max(max(circuits_height), max(circuits_width));
-
+int: min_dimension = min(circuits_width_min, circuits_height_min)
 % setting an array of boolean variables to specify if a circuit is rotated
 array[1..tot_circuits] of var bool: rotation;
 
 % defining two vectors of variables to hold new values for height and width in the case of a rotated circuit
-array[1..tot_circuits] of var 0..max_dimension: rotation_widths = [if rotation[i] then circuits_height[i] 
+array[1..tot_circuits] of var min_dimension..max_dimension: rotation_widths = [if rotation[i] then circuits_height[i] 
                                                                    else circuits_width[i] 
                                                                    endif | i in 1..tot_circuits];
 
-array[1..tot_circuits] of var 0..max_dimension: rotation_heights = [if rotation[i] then circuits_width[i] 
+array[1..tot_circuits] of var min_dimension..max_dimension: rotation_heights = [if rotation[i] then circuits_width[i] 
                                                                     else circuits_height[i] 
                                                                     endif | i in 1..tot_circuits];
 
