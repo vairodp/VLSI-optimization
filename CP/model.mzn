@@ -81,11 +81,6 @@ ann: s_ioD_idM = seq_search([int_search([height], smallest, indomain_min),
                               int_search([x[i] | i in decreasing_dimension], input_order, indomain_min, complete),
                               int_search([y[i] | i in decreasing_dimension], input_order, indomain_min, complete)]);
 
-ann: s_ioD_idR_luby = seq_search([int_search([height], smallest, indomain_min),
-                              int_search([x[i] | i in decreasing_dimension], input_order, indomain_random, complete),
-                              int_search([y[i] | i in decreasing_dimension], input_order, indomain_random, complete),
-                              restart_luby(10)]);
-
 ann: s_ioA_idR_luby = seq_search([int_search([height], smallest, indomain_min),
                               int_search([x[i] | i in decreasing_area], input_order, indomain_random, complete),
                               int_search([y[i] | i in decreasing_area], input_order, indomain_random, complete),
@@ -103,26 +98,28 @@ ann: s_ff_idR_luby = seq_search([int_search([height], smallest, indomain_min),
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% first, test gecode and chuffed on this (1,2)
-% solve :: s_ioA_idM  minimize height;
+% first, test gecode (1)
+% solve :: s_ff_idR_luby  minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% then, test the best solver on this: (3)
-% solve :: s_ioD_idM  minimize height;
+% then, gecode on this: (2)
+% solve :: s_ioA_idR_luby  minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% then, this if the solver has a better performance on s_ioA_idM: (4)
-% solve :: s_ioA_idR_luby minimize height;
-
-% OR, this if the solver has a better performance on s_ioD_idM: (4)
-% solve :: s_ioD_idR_luby minimize height;
+% then, chuffed: (3)
+solve :: s_ioA_idM minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% finally, the best solver on this: (5)
-% solve :: s_ff_idR_luby minimize height;
+% then, chuffed: (4)
+% solve :: s_ioD_idM minimize height;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% finally, chuffed on this, without any symmetry breaking constraint: (5)
+% solve :: s_ioD_idM minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
