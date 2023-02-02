@@ -35,6 +35,7 @@ array[1..tot_circuits] of var 0..h_max - circuits_height_min: y;
 
 % defining an array of indexes representing the circuits from the biggest to the smallest in terms of area;
 array[1..tot_circuits] of int: decreasing_area = arg_sort(i in 1..tot_circuits)(-circuits_width[i] * circuits_height[i]);
+array[1..tot_circuits] of int: decreasing_dimension = arg_sort(i in 1..tot_circuits)(-max(circuits_width[i], circuits_height[i]));
 
 % setting the largest possible dimension to be used in the rotation case
 int: max_dimension = max(max(circuits_height), max(circuits_width));
@@ -95,11 +96,32 @@ constraint symmetry_breaking_constraint(
                                         (rotation[i] == false));
 
 % specifying an heuristic to be followed during search
-ann: search_ann = seq_search([int_search([height], smallest, indomain_min),
+ann: s_ioA_idM = seq_search([int_search([height], smallest, indomain_min),
                               int_search([x[i] | i in decreasing_area], input_order, indomain_min, complete),
                               int_search([y[i] | i in decreasing_area], input_order, indomain_min, complete)]);
 
+ann: s_ioD_idM = seq_search([int_search([height], smallest, indomain_min),
+                              int_search([x[i] | i in decreasing_dimension], input_order, indomain_min, complete),
+                              int_search([y[i] | i in decreasing_dimension], input_order, indomain_min, complete)]);
+
+ann: s_ioD_idR_luby = seq_search([int_search([height], smallest, indomain_min),
+                              int_search([x[i] | i in decreasing_dimension], input_order, indomain_random, complete),
+                              int_search([y[i] | i in decreasing_dimension], input_order, indomain_random, complete),
+                              restart_luby(10)]);
+
+ann: s_ioA_idR_luby = seq_search([int_search([height], smallest, indomain_min),
+                              int_search([x[i] | i in decreasing_area], input_order, indomain_random, complete),
+                              int_search([y[i] | i in decreasing_area], input_order, indomain_random, complete),
+                              restart_luby(10)]);
+
+ann: s_ff_idR_luby = seq_search([int_search([height], smallest, indomain_min),
+                              int_search(x, first_fail, indomain_random, complete),
+                              int_search(y, first_fail, indomain_random, complete),
+                              restart_luby(10)]);
+
 % chosing height as our objective function to be minimized
+% here use just the best configuration of the normal model for testing:
+
 solve :: search_ann minimize height; 
 
 % formatting the output accordingly to the assigments specifications
