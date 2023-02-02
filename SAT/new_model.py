@@ -66,9 +66,6 @@ def get_first_index(solution, bool_variable, n_circuits):
 
     return  [[solution.eval(variable) for variable in bool_variable[c]].index(True) for c in range(n_circuits)]
 
-def test(solution, bool_variable, n_circuits):
-
-    return  [[solution.eval(variable) for variable in bool_variable[c]]for c in range(n_circuits)]
 
 def SAT_model(circuits_variables):
 
@@ -80,8 +77,6 @@ def SAT_model(circuits_variables):
     h_range = get_h_range(w_board, w, h)
 
     for h_board in h_range:
-
-        # print(f"h_board is:{h_board}\n")
 
         x = [[Bool(f"x[{c}][{w}]") for w in range(w_board)] for c in range(n_circuits)]
         y = [[Bool(f"y[{c}][{h}]") for h in range(h_board)] for c in range(n_circuits)]
@@ -119,23 +114,14 @@ def SAT_model(circuits_variables):
             solution = solver.model()
             xc = get_first_index(solution, x, n_circuits)
             yc = get_first_index(solution, y, n_circuits)
-            xct = test(solution, x, n_circuits)
-            yct = test(solution, y, n_circuits)
-            print(f"the x is:\n{xct}")
-            print(f"the y is:\n{yct}")
-
             return {'h_board': h_board, 'execution_time': execution_time, 'xc': xc, 'yc': yc}
 
-        # print(f'The problem is {str(solved)} for an h_board of {h_board}')
 
     return "unsat"
 
 if __name__ == "__main__":
 
     circuits_variables = read_variables(sys.argv[1])
-
-    # the following line is for debugging:
-    # circuits_variables = {'tot_circuits': 4, 'plate_width': 5, 'circuits_width': [2,3,3,2], 'circuits_height':[5,6,1,2]}
 
     solution = SAT_model(circuits_variables)
     if solution == 'unsat':
