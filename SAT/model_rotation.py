@@ -16,8 +16,27 @@ def get_h_range(w_board, w, h):
 
     return np.arange(h_min, h_max)
 
-# (X[c] ∧ ¬r[c]) ∨ (Y[c] ∧ r[c])
 def existence(variable, span, r_span, limit, n_circuits, r):
+    e = And([
+            Xor(
+                Or([
+                    And(
+                        And([variable[c][j] for j in np.arange(span[c]) + i]), 
+                        Not(r[c])
+                        ) for i in range(limit - span[c] + 1)]
+                    ),
+                Or([
+                    And(
+                        And([variable[c][j] for j in np.arange(r_span[c]) + i]),
+                        r[c]
+                        ) for i in range(limit - r_span[c] + 1)]
+                    )
+                ) for c in range(n_circuits)]
+            )
+    return e
+
+
+def strong_existence(variable, span, r_span, limit, n_circuits, r):
     e = And([
             Xor(
                 Or([
@@ -55,21 +74,13 @@ def unicity(variable, span, limit, n_circuits):
 
 def impenetrability(x, y, w_board, h_board, n_circuits):
     i = And([
-            And([
-                Implies(
-                        And(x[c][s], x[k][s]), 
-                        Not(
-                            Or([ 
-                                And(y[c][i], y[k][i]) for i in range(h_board)] 
+                Implies(Or([And(x[c][s], x[k][s])  for s in range(w_board)]), 
+                            And([ 
+                                Not(And(y[c][i], y[k][i])) for i in range(h_board)] 
                                 )
-                            )
                         ) for c, k in combinations(np.arange(n_circuits), 2)]
-                ) for s in range(w_board)]
             )
     return i
-'''
-def rotation(rx, ry):
-    return And(Implies(rx,ry), And(ry,rx)) '''
 
 
 def get_first_index(solution, bool_variable, n_circuits):
@@ -101,23 +112,32 @@ def SAT_model(circuits_variables):
         y = [[Bool(f"y[{c}][{h}]") for h in range(h_board)] for c in range(n_circuits)]
 
         r = [Bool(f"rx[{c}]") for c in range(n_circuits)]
-        # ry = [Bool(f"ry[{c}]") for c in range(n_circuits)]
 
+        # setting the constraints
         existence_x = existence(x, w, h, w_board, n_circuits, r)
         existence_y = existence(y, h, w, h_board, n_circuits, r)
+
+        strong_existence_x = existence(x, w, h, w_board, n_circuits, r)
+        strong_existence_y = existence(y, h, w, h_board, n_circuits, r)
 
         unicity_x = unicity(x, w, w_board, n_circuits)
         unicity_y = unicity(y, w, h_board, n_circuits)
 
-        #rotation_c = rotation(rx, ry)
 
         impenetrability_c= impenetrability(x, y, w_board, h_board, n_circuits)
 
         solver = Solver()
+
+        # use only the configuration that gave best results on the non rotated problem
         solver.add(existence_x)
         solver.add(existence_y)
+
+        #solver.add(strong_existence_x)
+        #solver.add(strong_existence_y)
         #solver.add(unicity_x)
         #solver.add(unicity_y)
+
+
         solver.add(impenetrability_c)
 
         start = time.time()
@@ -128,11 +148,9 @@ def SAT_model(circuits_variables):
         
         if str(solved) == 'sat':
             solution = solver.model()
-            #print(solution)
             xc = get_first_index(solution, x, n_circuits)
             yc = get_first_index(solution, y, n_circuits)
             rc = rotated(solution, r)
-            print(rc)
             rotated_circuits = rotate_circuits(w,h,rc)
             circuits_variables["circuits_width"] = rotated_circuits[0]
             circuits_variables["circuits_height"] = rotated_circuits[1]
@@ -143,11 +161,8 @@ def SAT_model(circuits_variables):
 
 if __name__ == "__main__":
 
-    # circuits_variables = read_variables(sys.argv[1])
+    circuits_variables = read_variables(sys.argv[1])
     
-    # the following line is for debugging:
-    circuits_variables = {'tot_circuits': 4, 'plate_width': 8, 'circuits_width': [3, 3, 3, 5], 'circuits_height':[3, 5, 5, 5]}
-
     solution = SAT_model(circuits_variables)
     if solution == 'unsat':
         print('Problem is unsat')

@@ -2,10 +2,13 @@ import os
 import shutil
 
 DATAFILES_PATH = "datafiles/"
-DEFAULT_PATH = "dataset/instances/instances"
+#DEFAULT_PATH = "dataset/instances/instances"
+DEFAULT_PATH = 'dataset/instances/fast_test_instances'
 
 # 5 minutes
-TIME_LIMIT = 300000
+# TIME_LIMIT = 300000
+# 3 minutes
+TIME_LIMIT = 180000
 
 
 # TODO description

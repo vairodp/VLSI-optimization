@@ -45,7 +45,7 @@ def read_variables(file_path):
 def SATsolver(file_path, output_path, rotation, model_path, symmetry_breaking_constraints):
     
     output_file = os.path.join(output_path, os.path.basename(file_path).replace(".dzn", ".txt"))
-
+    
     cmd = "python " + model_path + " " + file_path + " " + output_file
     placeholder = os.popen(cmd)
     print(placeholder.read())

@@ -20,6 +20,14 @@ def get_h_range(w_board, w, h):
 
 def existence(variable, span, limit, n_circuits):
     e = And([
+             Or([And([variable[c][j] for j in np.arange(span[c]) + i]
+                     ) for i in range(limit - span[c] + 1)]
+                ) for c in range(n_circuits)]
+            )
+    return e
+
+def strong_existence(variable, span, limit, n_circuits):
+    e = And([
              Or([
                 And(
                     And([variable[c][j] for j in np.arange(span[c]) + i]), 
@@ -28,7 +36,6 @@ def existence(variable, span, limit, n_circuits):
                 ) for c in range(n_circuits)]
             )
     return e
-
 
 def unicity(variable, span, limit, n_circuits):
     u = And([
@@ -46,16 +53,11 @@ def unicity(variable, span, limit, n_circuits):
 
 def impenetrability(x, y, w_board, h_board, n_circuits):
     i = And([
-            And([
-                Implies(
-                        And(x[c][s], x[k][s]), 
-                        Not(
-                            Or([ 
-                                And(y[c][i], y[k][i]) for i in range(h_board)] 
+                Implies(Or([And(x[c][s], x[k][s])  for s in range(w_board)]), 
+                            And([ 
+                                Not(And(y[c][i], y[k][i])) for i in range(h_board)] 
                                 )
-                            )
                         ) for c, k in combinations(np.arange(n_circuits), 2)]
-                ) for s in range(w_board)]
             )
     return i
 
@@ -76,13 +78,14 @@ def SAT_model(circuits_variables):
 
     for h_board in h_range:
 
-        # print(f"h_board is:{h_board}\n")
-
         x = [[Bool(f"x[{c}][{w}]") for w in range(w_board)] for c in range(n_circuits)]
         y = [[Bool(f"y[{c}][{h}]") for h in range(h_board)] for c in range(n_circuits)]
 
         existence_x = existence(x, w, w_board, n_circuits)
         existence_y = existence(y, h, h_board, n_circuits)
+
+        strong_existence_x = strong_existence(x, w, w_board, n_circuits)
+        strong_existence_y = strong_existence(y, h, h_board, n_circuits)
 
         unicity_x = unicity(x, w, w_board, n_circuits)
         unicity_y = unicity(y, h, h_board, n_circuits)
@@ -90,10 +93,16 @@ def SAT_model(circuits_variables):
         impenetrability_c= impenetrability(x, y, w_board, h_board, n_circuits)
 
         solver = Solver()
-        solver.add(existence_x)
-        solver.add(existence_y)
-        #solver.add(unicity_x)
-        #solver.add(unicity_y)
+
+        # if the following lines are commented, then the solver.add for strong existence and unicity must be uncommented
+        #solver.add(existence_x)
+        #solver.add(existence_y)
+
+        solver.add(strong_existence_x)
+        solver.add(strong_existence_y)
+        solver.add(unicity_x)
+        solver.add(unicity_y)
+
         solver.add(impenetrability_c)
 
         start = time.time()
@@ -105,19 +114,14 @@ def SAT_model(circuits_variables):
             solution = solver.model()
             xc = get_first_index(solution, x, n_circuits)
             yc = get_first_index(solution, y, n_circuits)
-
             return {'h_board': h_board, 'execution_time': execution_time, 'xc': xc, 'yc': yc}
 
-        # print(f'The problem is {str(solved)} for an h_board of {h_board}')
 
     return "unsat"
 
 if __name__ == "__main__":
 
     circuits_variables = read_variables(sys.argv[1])
-
-    # the following line is for debugging:
-    # circuits_variables = {'tot_circuits': 4, 'plate_width': 5, 'circuits_width': [2,3,3,2], 'circuits_height':[5,6,1,2]}
 
     solution = SAT_model(circuits_variables)
     if solution == 'unsat':

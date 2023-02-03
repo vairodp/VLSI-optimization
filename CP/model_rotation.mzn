@@ -39,7 +39,7 @@ array[1..tot_circuits] of int: decreasing_dimension = arg_sort(i in 1..tot_circu
 
 % setting the largest possible dimension to be used in the rotation case
 int: max_dimension = max(max(circuits_height), max(circuits_width));
-int: min_dimension = min(circuits_width_min, circuits_height_min)
+int: min_dimension = min(circuits_width_min, circuits_height_min);
 % setting an array of boolean variables to specify if a circuit is rotated
 array[1..tot_circuits] of var bool: rotation;
 
@@ -122,7 +122,7 @@ ann: s_ff_idR_luby = seq_search([int_search([height], smallest, indomain_min),
 % chosing height as our objective function to be minimized
 % here use just the best configuration of the normal model for testing:
 
-solve :: search_ann minimize height; 
+solve :: s_ioA_idM minimize height; 
 
 % formatting the output accordingly to the assigments specifications
 output ["\(plate_width) \(height)\n" ++ "\(tot_circuits)\n" ++ concat(i in 1..tot_circuits)("\(rotation_widths[i]) \(rotation_heights[i]) \(x[i]) \(y[i])\n")];
