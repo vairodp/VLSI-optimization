@@ -98,28 +98,28 @@ ann: s_ff_idR_luby = seq_search([int_search([height], smallest, indomain_min),
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% first, test gecode (1)
+% first, test gecode (1) FATTO
 % solve :: s_ff_idR_luby  minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% then, gecode on this: (2)
+% then, gecode on this: (2) FACENDO
 % solve :: s_ioA_idR_luby  minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% then, chuffed: (3)
-solve :: s_ioA_idM minimize height;
+% then, chuffed: (3) FATTO
+ solve :: s_ioA_idM minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% then, chuffed: (4)
+% then, chuffed: (4) FATTO
 % solve :: s_ioD_idM minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % finally, chuffed on this, without any symmetry breaking constraint: (5)
-% solve :: s_ioD_idM minimize height;
+% solve :: s_ioA_idM minimize height;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
